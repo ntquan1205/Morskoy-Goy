@@ -1,34 +1,31 @@
-﻿//using Morskoy_Goy.Services;
-using System.Windows;
-using System.Windows.Navigation;
+﻿using System.Windows;
 
 namespace Morskoy_Goy.Views
 {
     public partial class MainMenuWindow : Window
     {
-        private readonly NavigationService _navigationService;
-
         public MainMenuWindow()
         {
             InitializeComponent();
-            //_navigationService = new NavigationService();
         }
 
-        private void OnStartGameClick(object sender, RoutedEventArgs e)
+        private void CreateGameButton_Click(object sender, RoutedEventArgs e)
         {
-            //var lobbyWindow = new LobbyWindow();
-            //lobbyWindow.Show();
+            var hostWindow = new HostWindow();
+            hostWindow.Show();
             this.Close();
         }
 
-        private void OnExitClick(object sender, RoutedEventArgs e)
+        private void JoinGameButton_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            var clientWindow = new ClientWindow();
+            clientWindow.Show();
+            this.Close();
         }
 
-        private void OnMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
-            this.DragMove();
+            Application.Current.Shutdown();
         }
     }
 }

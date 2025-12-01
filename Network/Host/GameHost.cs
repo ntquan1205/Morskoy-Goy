@@ -1,31 +1,38 @@
-﻿using System;
+﻿using Morskoy_Goy.Network.Common;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
-using Morskoy_Goy.Network.Common;
+using System.Threading.Tasks;
 
-namespace Morskoy_Goy.Network.Client
+namespace Morskoy_Goy.Network.Host
 {
-    public class GameClient
+    public class GameHost
     {
+        private TcpListener _listener;
         private TcpClient _client;
         private NetworkStream _stream;
+        private string _playerName;
         private Thread _listenThread;
-        private bool _isConnected;
+        private bool _isRunning;
 
-        public event Action<string> Connected;
-        public event Action Disconnected;
+        public event Action<string> ClientConnected;
+        public event Action ClientDisconnected;
 
-        public async System.Threading.Tasks.Task Connect(string hostIp, int port, string playerName)
+        public void Start(int port, string playerName)
         {
-            _client = new TcpClient();
-            await _client.ConnectAsync(hostIp, port);
+            _playerName = playerName;
+            _listener = new TcpListener(IPAddress.Any, port);
+            _listener.Start();
+            _isRunning = true;
+
+            _client = _listener.AcceptTcpClient();
             _stream = _client.GetStream();
-            _isConnected = true;
 
-
-            Connected?.Invoke("Хост");
+            ClientConnected?.Invoke("Соперник");
 
             _listenThread = new Thread(ListenForMessages);
             _listenThread.Start();
@@ -35,7 +42,7 @@ namespace Morskoy_Goy.Network.Client
         {
             byte[] buffer = new byte[4096];
 
-            while (_isConnected && _client.Connected)
+            while (_isRunning && _client.Connected)
             {
                 try
                 {
@@ -52,23 +59,24 @@ namespace Morskoy_Goy.Network.Client
                 }
             }
 
-            Disconnected?.Invoke();
+            ClientDisconnected?.Invoke();
         }
 
         public void SendMessage(NetworkMessage message)
         {
-            if (!_isConnected || !_client.Connected) return;
+            if (!_isRunning || !_client.Connected) return;
 
             string json = JsonSerializer.Serialize(message);
             byte[] data = Encoding.UTF8.GetBytes(json);
             _stream.Write(data, 0, data.Length);
         }
 
-        public void Disconnect()
+        public void Stop()
         {
-            _isConnected = false;
+            _isRunning = false;
             _stream?.Close();
             _client?.Close();
+            _listener?.Stop();
         }
     }
 }
