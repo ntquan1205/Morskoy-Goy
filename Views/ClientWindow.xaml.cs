@@ -89,8 +89,13 @@ namespace Morskoy_Goy.Views
 
         private void StartGame()
         {
-            MessageBox.Show("Игра начинается!", "Морской Гой");
-            BackButton_Click(null, null);
+            var gameWindow = new GameWindow(
+                playerName: PlayerNameTextBox.Text,
+                opponentName: "Хост", 
+                isHost: false);
+
+            gameWindow.Show();
+            this.Close();
         }
 
         protected override void OnClosed(EventArgs e)
