@@ -1,5 +1,6 @@
 ﻿using Morskoy_Goy.Network;
 using Morskoy_Goy.Network.Client;
+using Morskoy_Goy.Network.Host;
 using System;
 using System.Windows;
 using System.Windows.Threading;
@@ -89,13 +90,17 @@ namespace Morskoy_Goy.Views
 
         private void StartGame()
         {
+
             var gameWindow = new GameWindow(
                 playerName: PlayerNameTextBox.Text,
-                opponentName: "Хост", 
-                isHost: false);
+                opponentName: "Хост",
+                isHost: false,
+                networkObject: _gameClient); 
 
             gameWindow.Show();
-            this.Close();
+
+      
+            this.Hide(); 
         }
 
         protected override void OnClosed(EventArgs e)

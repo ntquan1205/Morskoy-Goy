@@ -10,7 +10,6 @@ namespace Morskoy_Goy.Views
     public partial class HostWindow : Window
     {
         private GameHost _gameHost;
-
         public HostWindow()
         {
             InitializeComponent();
@@ -116,11 +115,14 @@ namespace Morskoy_Goy.Views
         {
             var gameWindow = new GameWindow(
                 playerName: PlayerNameTextBox.Text,
-                opponentName: "Клиент", 
-                isHost: true);
+                opponentName: "Соперник",
+                isHost: true,
+                networkObject: _gameHost); 
 
             gameWindow.Show();
-            this.Close();
+
+ 
+            this.Hide(); 
         }
 
         protected override void OnClosed(EventArgs e)
