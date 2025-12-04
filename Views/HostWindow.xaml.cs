@@ -113,13 +113,9 @@ namespace Morskoy_Goy.Views
 
         private void StartGame()
         {
-            var gameWindow = new GameWindow(
-                playerName: PlayerNameTextBox.Text,
-                opponentName: "Соперник",
-                isHost: true,
-                networkObject: _gameHost); 
+            var placementWindow = new ShipPlacementWindow();
 
-            gameWindow.Show();
+            placementWindow.Show();
 
  
             this.Hide(); 

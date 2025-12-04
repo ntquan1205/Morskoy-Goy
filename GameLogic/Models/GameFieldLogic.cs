@@ -8,7 +8,7 @@ using System.Windows.Media.Media3D;
 
 namespace Morskoy_Goy.GameLogic.Models
 {
-    public class GameField
+    public class GameFieldLogic
     {
         public const int Width = 10;
         public const int Height = 10;
@@ -17,7 +17,7 @@ namespace Morskoy_Goy.GameLogic.Models
         public List<Ship> Ships { get; set; }
         public bool IsReady;
 
-        public GameField()
+        public GameFieldLogic()
         {
             Cells = new Cell[Width, Height];
             Ships = new List<Ship>();
@@ -41,7 +41,7 @@ namespace Morskoy_Goy.GameLogic.Models
         }
         public bool IsValidCoordinates(int x, int y)
         {
-            return x >= 0 && x <= Width && y >= 0 && y <= Height;
+            return x >= 0 && x < Width && y >= 0 && y < Height;
         }
     }
 }

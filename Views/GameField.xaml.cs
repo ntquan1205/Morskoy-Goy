@@ -1,62 +1,120 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Morskoy_Goy.GameLogic.Models;
 
 namespace Morskoy_Goy.Views
 {
-    /// <summary>
-    /// Логика взаимодействия для UserControl1.xaml
-    /// </summary>
     public partial class GameField : UserControl
     {
+        private GameFieldLogic _gameFieldLogic;
+        private bool _hideShips = false;
+        public event Action<int, int> CellClicked;
         public GameField()
         {
             InitializeComponent();
-            DrawGameField();
         }
-        private void DrawGameField()
+
+        public void SetGameFieldLogic(GameFieldLogic gameField)
         {
-            for (int row = 0; row < 10; row++)
+            _gameFieldLogic = gameField;
+            UpdateView();
+        }
+        public void SetHideShips(bool hide)
+        {
+            _hideShips = hide;
+            if (_gameFieldLogic != null)
+                UpdateView();
+        }
+        public void UpdateView()
+        {
+            FieldGrid.Children.Clear();
+
+            if (_gameFieldLogic == null)
             {
-                for (int col = 0; col < 10; col++)
+                DrawEmptyField();
+                return;
+            }
+
+            for (int y = 0; y < 10; y++)  
+            {
+                for (int x = 0; x < 10; x++)  
                 {
-                    var cell = CreateCell(col, row);
+                    var cell = CreateCell(x, y);
                     FieldGrid.Children.Add(cell);
                 }
             }
         }
+
+        private void DrawEmptyField()
+        {
+            for (int y = 0; y < 10; y++)
+            {
+                for (int x = 0; x < 10; x++)
+                {
+                    var cell = CreateCell(x, y);
+                    FieldGrid.Children.Add(cell);
+                }
+            }
+        }
+
         private Border CreateCell(int x, int y)
         {
             var border = new Border
             {
-                BorderBrush = Brushes.Black,      
-                BorderThickness = new Thickness(1), 
-                Background = Brushes.LightBlue,   
-                Margin = new Thickness(0.5),     
-                Width = 30,                       
-                Height = 30,                
-                Tag = $"{x},{y}"                  
+                BorderBrush = Brushes.Black,
+                BorderThickness = new Thickness(1),
+                Margin = new Thickness(0.5),
+                Width = 30,
+                Height = 30,
+                Tag = $"{x},{y}"
             };
+
+            if (_gameFieldLogic != null)
+            {
+                var cell = _gameFieldLogic.GetCell(x, y);
+                if (cell != null)
+                {
+                    border.Background = GetCellColor(cell);
+                }
+                else
+                {
+                    border.Background = Brushes.LightBlue;
+                }
+            }
+            else
+            {
+                border.Background = Brushes.LightBlue;  
+            }
 
             border.MouseLeftButtonDown += (sender, e) =>
             {
-                border.Background = Brushes.Gray;
-
-                MessageBox.Show($"Вы кликнули на клетку [{x},{y}]");
+                CellClicked?.Invoke(x, y);
             };
 
             return border;
+        }
+
+        private Brush GetCellColor(Cell cell)
+        {
+            if (_hideShips && cell.Status == CellStatus.Ship)
+            {
+                return Brushes.LightBlue;
+            }
+
+            switch (cell.Status)
+            {
+                case CellStatus.Ship:
+                    return Brushes.Gray;         
+                case CellStatus.ShipHited:
+                    return Brushes.Red;           
+                case CellStatus.Miss:
+                    return Brushes.White;         
+                case CellStatus.ShipDestroyed:
+                    return Brushes.DarkRed;      
+                default: 
+                    return Brushes.LightBlue;     
+            }
         }
     }
 }

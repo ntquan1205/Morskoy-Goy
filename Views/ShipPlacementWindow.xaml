@@ -1,0 +1,132 @@
+﻿<Window x:Class="Morskoy_Goy.Views.ShipPlacementWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:Morskoy_Goy.Views"
+        Title="Расстановка кораблей" 
+        Height="700" 
+        Width="900"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="#1E88E5" Padding="15">
+            <TextBlock Text="Расставьте ваши корабли" 
+                       FontSize="24" 
+                       FontWeight="Bold"
+                       Foreground="White"
+                       HorizontalAlignment="Center"/>
+        </Border>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" 
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Center">
+                <TextBlock Text="Ваше поле" 
+                           FontSize="18" 
+                           Margin="0,0,0,10"/>
+                <controls:GameField x:Name="PlacementField"
+                                    Width="400" 
+                                    Height="400"/>
+            </StackPanel>
+
+            <Border Grid.Column="1" 
+                    Background="#F5F5F5" 
+                    Margin="20"
+                    Padding="15">
+                <StackPanel>
+                    <TextBlock Text="Выберите корабль:" 
+                               FontSize="16" 
+                               FontWeight="Bold"
+                               Margin="0,0,0,10"/>
+
+                    <ListBox x:Name="ShipsListBox" 
+                             Height="150"
+                             Margin="0,0,0,20"
+                             SelectionChanged="ShipsListBox_SelectionChanged">
+
+                        <ListBoxItem>
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Width="20" Height="20" Fill="Gray" Margin="0,0,10,0"/>
+                                <TextBlock Text="4-палубный (1 шт)" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem>
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Width="20" Height="20" Fill="Gray" Margin="0,0,10,0"/>
+                                <TextBlock Text="3-палубный (2 шт)" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem>
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Width="20" Height="20" Fill="Gray" Margin="0,0,10,0"/>
+                                <TextBlock Text="2-палубный (3 шт)" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem>
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Width="20" Height="20" Fill="Gray" Margin="0,0,10,0"/>
+                                <TextBlock Text="1-палубный (4 шт)" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </ListBoxItem>
+                    </ListBox>
+
+                    <TextBlock Text="Ориентация:" 
+                               FontSize="14"
+                               Margin="0,0,0,5"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                        <RadioButton x:Name="HorizontalRadio" 
+                                     Content="Горизонтально" 
+                                     IsChecked="True"
+                                     Margin="0,0,10,0"/>
+                        <RadioButton x:Name="VerticalRadio" 
+                                     Content="Вертикально"/>
+                    </StackPanel>
+
+                    <Button x:Name="RandomPlaceButton"
+                            Content="Расставить случайно"
+                            Height="35"
+                            Margin="0,0,0,10"
+                            Click="RandomPlaceButton_Click"/>
+
+                    <Button x:Name="ClearButton"
+                            Content="Очистить поле"
+                            Height="35"
+                            Margin="0,0,0,10"
+                            Click="ClearButton_Click"/>
+
+                    <Button x:Name="ReadyButton"
+                            Content="Готов к бою!"
+                            Height="45"
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Background="#4CAF50"
+                            Foreground="White"
+                            Click="ReadyButton_Click"/>
+
+                    <TextBlock x:Name="StatusText" 
+                               Text="Разместите все корабли"
+                               Margin="0,20,0,0"
+                               Foreground="Gray"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="2" 
+                Background="#F5F5F5" 
+                BorderThickness="0,1,0,0"
+                Padding="10">
+            <TextBlock Text="Кликайте по полю для размещения кораблей"
+                       HorizontalAlignment="Center"/>
+        </Border>
+    </Grid>
+</Window>
