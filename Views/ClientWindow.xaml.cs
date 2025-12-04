@@ -91,11 +91,13 @@ namespace Morskoy_Goy.Views
         private void StartGame()
         {
 
-            var placementWindow = new ShipPlacementWindow(); 
-
+            var placementWindow = new ShipPlacementWindow(
+            PlayerNameTextBox.Text,  
+            "Хост",         
+            false,                   
+            _gameClient
+            );
             placementWindow.Show();
-
-      
             this.Hide(); 
         }
 

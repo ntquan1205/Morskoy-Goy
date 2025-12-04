@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Morskoy_Goy.GameLogic.Models;
+using System;
 using System.Windows;
 
 namespace Morskoy_Goy.Views
@@ -8,10 +9,11 @@ namespace Morskoy_Goy.Views
         private string _playerName;
         private string _opponentName;
         private bool _isHost;
+        private object _networkObject;
+        private GameFieldLogic _playerField;
+        private GameFieldLogic _enemyField;
 
-        private object _networkObject; 
-
-        public GameWindow(string playerName, string opponentName, bool isHost, object networkObject)
+        public GameWindow(string playerName, string opponentName, bool isHost, object networkObject, GameFieldLogic playerField)
         {
             InitializeComponent();
 
@@ -19,9 +21,27 @@ namespace Morskoy_Goy.Views
             _opponentName = opponentName;
             _isHost = isHost;
             _networkObject = networkObject;
+            _playerField = playerField;
+            _enemyField = new GameFieldLogic();
 
             Loaded += OnWindowLoaded;
             Closing += OnWindowClosing;
+            InitializeGameFields();
+        }
+
+        private void InitializeGameFields()
+        {
+            if (PlayerField != null)
+            {
+                PlayerField.SetGameFieldLogic(_playerField);
+                PlayerField.SetHideShips(false);
+            }
+
+            if (EnemyField != null)
+            {
+                EnemyField.SetGameFieldLogic(_enemyField);
+                EnemyField.SetHideShips(true);
+            }
         }
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
@@ -56,7 +76,7 @@ namespace Morskoy_Goy.Views
 
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Close(); 
+            this.Close();
         }
     }
 }

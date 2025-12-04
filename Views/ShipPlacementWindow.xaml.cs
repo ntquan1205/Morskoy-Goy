@@ -1,25 +1,36 @@
 ﻿using System.Windows;
 using Morskoy_Goy.GameLogic.Models;
-using Morskoy_Goy.GameLogic.Services;  
-using System.Windows.Controls;         
+using Morskoy_Goy.GameLogic.Services;
+using System.Windows.Controls;
 
 namespace Morskoy_Goy.Views
 {
     public partial class ShipPlacementWindow : Window
     {
-        private GameFieldLogic _gameField;
+        private GameFieldLogic _playerField;
         private ShipPlacementService _placementService;
         private Ship _selectedShip;
+        private string _playerName;
+        private string _opponentName;
+        private bool _isHost;
+        private object _networkObject;
 
-        public ShipPlacementWindow()
+        public ShipPlacementWindow(string playerName, string opponentName, bool isHost, object networkObject)
         {
             InitializeComponent();
-            _gameField = new GameFieldLogic();
-            _placementService = new ShipPlacementService(_gameField);
+
+            _playerName = playerName;
+            _opponentName = opponentName;
+            _isHost = isHost;
+            _networkObject = networkObject;
+
+            _playerField = new GameFieldLogic();
+            _placementService = new ShipPlacementService(_playerField);
             PlacementField.CellClicked += OnCellClicked;
-            PlacementField.SetGameFieldLogic(_gameField);
+            PlacementField.SetGameFieldLogic(_playerField);
             InitializeShipsList();
         }
+
         private void OnCellClicked(int x, int y)
         {
             if (_selectedShip == null)
@@ -27,6 +38,7 @@ namespace Morskoy_Goy.Views
                 MessageBox.Show("Выберите корабль из списка!");
                 return;
             }
+
             bool isHorizontal = true;
 
             if (_placementService.PlaceShip(_selectedShip, x, y, isHorizontal))
@@ -90,7 +102,7 @@ namespace Morskoy_Goy.Views
 
         private void CheckIfReady()
         {
-            ReadyButton.IsEnabled = _gameField.IsReady;
+            ReadyButton.IsEnabled = _playerField.IsReady;
         }
 
         private void RandomPlaceButton_Click(object sender, RoutedEventArgs e)
@@ -99,28 +111,34 @@ namespace Morskoy_Goy.Views
             PlacementField.UpdateView();
             ShipsListBox.Items.Clear();
             _selectedShip = null;
-
             CheckIfReady();
         }
 
         private void ClearButton_Click(object sender, RoutedEventArgs e)
         {
-            _gameField = new GameFieldLogic();
-            _placementService = new ShipPlacementService(_gameField);
-            PlacementField.SetGameFieldLogic(_gameField);
+            _playerField = new GameFieldLogic();
+            _placementService = new ShipPlacementService(_playerField);
+            PlacementField.SetGameFieldLogic(_playerField);
             InitializeShipsList();
             ReadyButton.IsEnabled = false;
         }
 
         private void ReadyButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!_gameField.IsReady)
+            if (!_playerField.IsReady)
             {
                 MessageBox.Show("Расставьте все корабли!");
                 return;
             }
 
-            var gameWindow = new GameWindow("Игрок", "Противник", true, null);
+            var gameWindow = new GameWindow(
+                _playerName,
+                _opponentName,
+                _isHost,
+                _networkObject,
+                _playerField
+            );
+
             gameWindow.Show();
             this.Close();
         }
