@@ -26,7 +26,7 @@
                         Foreground="White"
                         BorderThickness="0"
                         FontWeight="Bold"
-                        Click="ExitButton_Click"
+                        
                         Cursor="Hand"/>
 
                 <TextBlock x:Name="GameStatusText"
@@ -62,7 +62,7 @@
                                FontWeight="Bold"
                                HorizontalAlignment="Center"
                                Margin="0,0,0,10"/>
-                    <controls:GameField x:Name="PlayerField" 
+                    <controls:GameField x:Name="MyField" 
                                         Width="350" 
                                         Height="350"/>
                 </StackPanel>
