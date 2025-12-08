@@ -7,16 +7,16 @@ namespace Morskoy_Goy.Views
 {
     public partial class GameField : UserControl
     {
-        private GameFieldLogic _gameFieldLogic;
+        private Models.GameField _gameFieldLogic;
         private bool _hideShips = false;
         public event Action<int, int> CellClicked;
 
         public GameField()
         {
             InitializeComponent();
-            _gameFieldLogic = new GameFieldLogic();
+            _gameFieldLogic = new Models.GameField();
         }
-        public GameFieldLogic? GetFieldLogic()
+        public Models.GameField? GetFieldLogic()
         {
             return _gameFieldLogic;
         }
@@ -29,7 +29,7 @@ namespace Morskoy_Goy.Views
             return cell?.Status;
         }
         
-        public void SetGameFieldLogic(GameFieldLogic gameField)
+        public void SetGameFieldLogic(Models.GameField gameField)
         {
             _gameFieldLogic = gameField;
             UpdateView();

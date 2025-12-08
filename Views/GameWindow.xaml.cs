@@ -18,7 +18,7 @@ namespace Morskoy_Goy.Views
         private bool _isHostMode = false;
         private string _playerName = "";
         private string _opponentName = "";
-        private GameFieldLogic _playerField;
+        private Models.GameField _playerField;
 
         
         private int _enemyHitsCount = 0;
@@ -40,7 +40,7 @@ namespace Morskoy_Goy.Views
             string opponentName,
             bool isHost,
             object networkObject,
-            GameFieldLogic playerField)
+            Models.GameField playerField)
         {
             InitializeComponent();
 
@@ -104,7 +104,7 @@ namespace Morskoy_Goy.Views
                     MyField.CellClicked += OnMyFieldCellClicked;
                 }
 
-                var emptyField = new GameFieldLogic();
+                var emptyField = new Models.GameField();
                 if (EnemyField != null)
                 {
                     EnemyField.SetGameFieldLogic(emptyField);
@@ -131,13 +131,13 @@ namespace Morskoy_Goy.Views
             }
         }
 
-        private void CopyFieldData(GameFieldLogic source, GameFieldLogic destination)
+        private void CopyFieldData(Models.GameField source, Models.GameField destination)
         {
             if (source == null || destination == null) return;
 
-            for (int x = 0; x < GameFieldLogic.Width; x++)
+            for (int x = 0; x < Models.GameField.Width; x++)
             {
-                for (int y = 0; y < GameFieldLogic.Height; y++)
+                for (int y = 0; y < Models.GameField.Height; y++)
                 {
                     var sourceCell = source.GetCell(x, y);
                     var destCell = destination.GetCell(x, y);

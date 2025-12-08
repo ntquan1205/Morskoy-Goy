@@ -7,11 +7,11 @@ namespace Morskoy_Goy.Services
 {
     public class ShipPlacementService
     {
-        private GameFieldLogic _field;
+        private GameField _field;
         private List<Ship> _shipsToPlace;
         private Random _random;
 
-        public ShipPlacementService(GameFieldLogic field)
+        public ShipPlacementService(GameField field)
         {
             _field = field;
             _random = new Random();
@@ -39,11 +39,11 @@ namespace Morskoy_Goy.Services
         {
             if (isHorizontal)
             {
-                if (startX + (int)ship.Type > GameFieldLogic.Width) return false;
+                if (startX + (int)ship.Type > GameField.Width) return false;
             }
             else
             {
-                if (startY + (int)ship.Type > GameFieldLogic.Height) return false;
+                if (startY + (int)ship.Type > GameField.Height) return false;
             }
 
             for (int i = 0; i < (int)ship.Type; i++)
@@ -117,8 +117,8 @@ namespace Morskoy_Goy.Services
 
                 while (!placed && attempts < 1000)
                 {
-                    int x = _random.Next(0, GameFieldLogic.Width);
-                    int y = _random.Next(0, GameFieldLogic.Height);
+                    int x = _random.Next(0, GameField.Width);
+                    int y = _random.Next(0, GameField.Height);
                     bool horizontal = _random.Next(0, 2) == 0;
 
                     if (CanPlaceShip(ship, x, y, horizontal))
@@ -142,9 +142,9 @@ namespace Morskoy_Goy.Services
 
         private void ClearField()
         {
-            for (int x = 0; x < GameFieldLogic.Width; x++)
+            for (int x = 0; x < GameField.Width; x++)
             {
-                for (int y = 0; y < GameFieldLogic.Height; y++)
+                for (int y = 0; y < GameField.Height; y++)
                 {
                     var cell = _field.GetCell(x, y);
                     if (cell != null)

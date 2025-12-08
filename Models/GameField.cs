@@ -8,7 +8,7 @@ using System.Windows.Media.Media3D;
 
 namespace Morskoy_Goy.Models
 {
-    public class GameFieldLogic
+    public class GameField
     {
         public const int Width = 10;
         public const int Height = 10;
@@ -17,7 +17,7 @@ namespace Morskoy_Goy.Models
         public List<Ship> Ships { get; set; }
         public bool IsReady;
 
-        public GameFieldLogic()
+        public GameField()
         {
             Cells = new Cell[Width, Height];
             Ships = new List<Ship>();

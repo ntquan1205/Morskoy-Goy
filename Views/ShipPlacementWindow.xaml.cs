@@ -7,7 +7,7 @@ namespace Morskoy_Goy.Views
 {
     public partial class ShipPlacementWindow : Window
     {
-        private GameFieldLogic _playerField;
+        private Models.GameField _playerField;
         private ShipPlacementService _placementService;
         private Ship _selectedShip;
         private string _playerName;
@@ -24,7 +24,7 @@ namespace Morskoy_Goy.Views
             _isHost = isHost;
             _networkObject = networkObject;
 
-            _playerField = new GameFieldLogic();
+            _playerField = new Models.GameField();
             _placementService = new ShipPlacementService(_playerField);
             PlacementField.CellClicked += OnCellClicked;
             PlacementField.SetGameFieldLogic(_playerField);
@@ -116,7 +116,7 @@ namespace Morskoy_Goy.Views
 
         private void ClearButton_Click(object sender, RoutedEventArgs e)
         {
-            _playerField = new GameFieldLogic();
+            _playerField = new Models.GameField();
             _placementService = new ShipPlacementService(_playerField);
             PlacementField.SetGameFieldLogic(_playerField);
             InitializeShipsList();

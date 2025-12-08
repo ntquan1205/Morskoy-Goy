@@ -5,14 +5,14 @@ namespace Morskoy_Goy.Models
 {
     public class Player
     {
-        public GameFieldLogic Field { get; set; }
+        public GameField Field { get; set; }
         public bool IsMyTurn { get; set; }
         public bool IsHost { get; }
 
         public bool IsReady { get; set; }
         public Player(bool isHost = false)
         {
-            Field = new GameFieldLogic();
+            Field = new GameField();
             IsHost = isHost;
             IsMyTurn = isHost;
         }
