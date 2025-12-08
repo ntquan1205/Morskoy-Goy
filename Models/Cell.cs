@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Morskoy_Goy.GameLogic.Models
+namespace Morskoy_Goy.Models
 {
     public class Cell
     {

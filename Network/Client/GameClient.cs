@@ -1,4 +1,4 @@
-﻿using Morskoy_Goy.GameLogic.Models;
+﻿using Morskoy_Goy.Models;
 using Morskoy_Goy.Network.Common;
 using System;
 using System.Net.Sockets;

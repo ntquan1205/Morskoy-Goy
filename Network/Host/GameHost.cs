@@ -1,5 +1,4 @@
-﻿using Morskoy_Goy.GameLogic.Models;
-using Morskoy_Goy.Network.Common;
+﻿using Morskoy_Goy.Network.Common;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -7,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using Morskoy_Goy.Views;
+using Morskoy_Goy.Models;
 
 namespace Morskoy_Goy.Network.Host
 {

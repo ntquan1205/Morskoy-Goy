@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media.Media3D;
 
-namespace Morskoy_Goy.GameLogic.Models
+namespace Morskoy_Goy.Models
 {
     public class GameFieldLogic
     {

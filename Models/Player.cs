@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Morskoy_Goy.GameLogic.Models
+namespace Morskoy_Goy.Models
 {
     public class Player
     {

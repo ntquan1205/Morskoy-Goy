@@ -1,7 +1,7 @@
 ﻿using System.Windows;
-using Morskoy_Goy.GameLogic.Models;
-using Morskoy_Goy.GameLogic.Services;
 using System.Windows.Controls;
+using Morskoy_Goy.Services;
+using Morskoy_Goy.Models;
 
 namespace Morskoy_Goy.Views
 {

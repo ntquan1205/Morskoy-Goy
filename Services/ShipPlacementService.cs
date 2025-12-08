@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Morskoy_Goy.GameLogic.Models;
+using Morskoy_Goy.Models;
 
-namespace Morskoy_Goy.GameLogic.Services
+namespace Morskoy_Goy.Services
 {
     public class ShipPlacementService
     {

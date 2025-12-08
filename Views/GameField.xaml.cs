@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Morskoy_Goy.GameLogic.Models;
+using Morskoy_Goy.Models;
 
 namespace Morskoy_Goy.Views
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-namespace Morskoy_Goy.GameLogic.Models
+namespace Morskoy_Goy.Models
 {
     public class Ship
     {

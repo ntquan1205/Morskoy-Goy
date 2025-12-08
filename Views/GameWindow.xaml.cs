@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Windows;
-using Morskoy_Goy.GameLogic.Models;
-using Morskoy_Goy.GameLogic.Services;
+using Morskoy_Goy.Models;
 using Morskoy_Goy.Network.Client;
 using Morskoy_Goy.Network.Common;
 using Morskoy_Goy.Network.Host;
+using Morskoy_Goy.Services;
 
 namespace Morskoy_Goy.Views
 {
