@@ -18,27 +18,24 @@
                 Background="#1E88E5" 
                 Padding="15">
             <StackPanel Orientation="Horizontal">
-                <Button x:Name="ExitButton"
-                        Content="🚪 Выйти в меню" 
+                <Button Content="🚪 Выйти в меню" 
                         Width="120"
                         Height="30"
                         Background="Transparent"
                         Foreground="White"
                         BorderThickness="0"
                         FontWeight="Bold"
-                        
+                        Command="{Binding ExitCommand}"
                         Cursor="Hand"/>
 
-                <TextBlock x:Name="GameStatusText"
-                           Text="Игра начинается..." 
+                <TextBlock Text="{Binding GameStatus}"
                            FontSize="20" 
                            FontWeight="Bold"
                            Foreground="White"
                            Margin="50,0,0,0"
                            VerticalAlignment="Center"/>
 
-                <TextBlock x:Name="PlayerInfoText"
-                           Text="" 
+                <TextBlock Text="{Binding CurrentPlayerInfo}"
                            FontSize="14"
                            Foreground="White"
                            Margin="50,0,0,0"
@@ -88,14 +85,20 @@
                 BorderBrush="#E0E0E0"
                 BorderThickness="0,1,0,0"
                 Padding="10">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <TextBlock Text="Статус подключения: " 
-                           FontWeight="Bold"/>
-                <TextBlock x:Name="ConnectionStatusText" 
-                           Text="Подключено"
-                           Foreground="#4CAF50"
+            <StackPanel>
+                <TextBlock Text="{Binding MessageText}"
+                           HorizontalAlignment="Center"
                            FontWeight="Bold"
-                           Margin="5,0,0,0"/>
+                           Margin="0,0,0,5"/>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="Статус подключения: " 
+                               FontWeight="Bold"/>
+                    <TextBlock Text="{Binding ConnectionStatus}" 
+                               Foreground="#4CAF50"
+                               FontWeight="Bold"
+                               Margin="5,0,0,0"/>
+                </StackPanel>
             </StackPanel>
         </Border>
     </Grid>

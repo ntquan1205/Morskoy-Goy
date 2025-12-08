@@ -18,6 +18,7 @@ namespace Morskoy_Goy.ViewModels
         private string _opponentName;
         private bool _isHost;
         private object _networkObject;
+        private bool _isHorizontal = true; // По умолчанию горизонтально
 
         public ObservableCollection<ShipListItem> ShipsToPlace { get; } = new ObservableCollection<ShipListItem>();
 
@@ -38,6 +39,18 @@ namespace Morskoy_Goy.ViewModels
         {
             get => _statusText;
             set => Set(ref _statusText, value);
+        }
+
+        public bool IsHorizontal
+        {
+            get => _isHorizontal;
+            set => Set(ref _isHorizontal, value);
+        }
+
+        public bool IsVertical
+        {
+            get => !_isHorizontal;
+            set => IsHorizontal = !value;
         }
 
         public Models.GameField PlayerField => _playerField;
@@ -102,13 +115,11 @@ namespace Morskoy_Goy.ViewModels
                 return;
             }
 
-            bool isHorizontal = true;
-
-            if (_placementService.PlaceShip(SelectedShip, x, y, isHorizontal))
+            if (_placementService.PlaceShip(SelectedShip, x, y, IsHorizontal))
             {
                 RemoveShipFromList(SelectedShip);
                 UpdateReadyStatus();
-                FieldUpdated?.Invoke(); 
+                FieldUpdated?.Invoke();
             }
             else
             {
@@ -130,7 +141,7 @@ namespace Morskoy_Goy.ViewModels
             ShipsToPlace.Clear();
             SelectedShip = null;
             UpdateReadyStatus();
-            FieldUpdated?.Invoke(); 
+            FieldUpdated?.Invoke();
         }
 
         private void ClearField(object parameter = null)
@@ -139,7 +150,7 @@ namespace Morskoy_Goy.ViewModels
             _placementService = new ShipPlacementService(_playerField);
             InitializeShipsList();
             IsReadyButtonEnabled = false;
-            FieldUpdated?.Invoke(); 
+            FieldUpdated?.Invoke();
         }
 
         private void StartGame(object parameter = null)
