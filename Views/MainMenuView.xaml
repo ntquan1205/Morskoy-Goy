@@ -1,10 +1,15 @@
-﻿<Window x:Class="Morskoy_Goy.Views.MainMenuWindow"
+﻿<Window x:Class="Morskoy_Goy.Views.MainMenuView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:viewModels="clr-namespace:Morskoy_Goy.ViewModels"
         Title="Морской Бой" 
         Height="400" 
         Width="600"
         WindowStartupLocation="CenterScreen">
+
+    <Window.DataContext>
+        <viewModels:MainMenuViewModel />
+    </Window.DataContext>
 
     <Grid Background="#1E88E5">
         <Grid.RowDefinitions>
@@ -13,55 +18,48 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-
-
         <StackPanel Grid.Row="1" 
                     HorizontalAlignment="Center" 
                     VerticalAlignment="Center"
                     Width="300">
 
-            <Button x:Name="CreateGameButton"
-                    Content="СОЗДАТЬ ИГРУ (ХОСТ)"
+            <Button Content="СОЗДАТЬ ИГРУ (ХОСТ)"
                     Height="60"
                     FontSize="18"
                     FontWeight="Bold"
                     Background="#4CAF50"
                     Foreground="White"
                     Margin="0,0,0,15"
-                    Click="CreateGameButton_Click"
+                    Command="{Binding CreateGameCommand}"
                     Cursor="Hand">
                 <Button.Effect>
                     <DropShadowEffect BlurRadius="10" ShadowDepth="3" Opacity="0.3"/>
                 </Button.Effect>
             </Button>
 
-            <Button x:Name="JoinGameButton"
-                    Content="ПРИСОЕДИНИТЬСЯ К ИГРЕ"
+            <Button Content="ПРИСОЕДИНИТЬСЯ К ИГРЕ"
                     Height="60"
                     FontSize="18"
                     FontWeight="Bold"
                     Background="#2196F3"
                     Foreground="White"
                     Margin="0,0,0,15"
-                    Click="JoinGameButton_Click"
+                    Command="{Binding JoinGameCommand}"
                     Cursor="Hand">
                 <Button.Effect>
                     <DropShadowEffect BlurRadius="10" ShadowDepth="3" Opacity="0.3"/>
                 </Button.Effect>
             </Button>
 
-            <Button x:Name="ExitButton"
-                    Content="ВЫХОД"
+            <Button Content="ВЫХОД"
                     Height="50"
                     FontSize="16"
                     Background="Transparent"
                     Foreground="White"
                     BorderBrush="White"
                     BorderThickness="1"
-                    Click="ExitButton_Click"
+                    Command="{Binding ExitCommand}"
                     Cursor="Hand"/>
         </StackPanel>
-
- 
     </Grid>
 </Window>

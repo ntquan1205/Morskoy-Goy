@@ -18,7 +18,7 @@ namespace Morskoy_Goy.Views
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            var mainMenu = new MainMenuWindow();
+            var mainMenu = new MainMenuView();
             mainMenu.Show();
             this.Close();
         }
