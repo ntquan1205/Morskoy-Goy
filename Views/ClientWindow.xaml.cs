@@ -36,7 +36,7 @@ namespace Morskoy_Goy.Views
                 _viewModel.PlayerName,
                 "Хост",
                 false,
-                _viewModel 
+                _viewModel.GameClient 
             );
             placementWindow.Show();
             this.Hide();

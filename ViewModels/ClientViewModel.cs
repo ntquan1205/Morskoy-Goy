@@ -12,6 +12,8 @@ namespace Morskoy_Goy.ViewModels
         private GameClient _gameClient;
         private DispatcherTimer _connectionTimer;
 
+        public GameClient GameClient => _gameClient;
+
         private string _playerName = "Игрок 2";
         public string PlayerName
         {

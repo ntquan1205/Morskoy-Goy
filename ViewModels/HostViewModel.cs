@@ -14,6 +14,8 @@ namespace Morskoy_Goy.ViewModels
         private GameHost _gameHost;
         private DispatcherTimer _connectionTimer;
 
+        public GameHost GameHost => _gameHost;
+
         private string _playerName = "Игрок 1";
         public string PlayerName
         {
