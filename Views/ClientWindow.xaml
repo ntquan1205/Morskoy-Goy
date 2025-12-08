@@ -21,7 +21,7 @@
                         Foreground="White"
                         BorderThickness="0"
                         FontWeight="Bold"
-                        Click="BackButton_Click"
+                        Command="{Binding BackCommand}"
                         Cursor="Hand"/>
 
                 <TextBlock Text="ПОДКЛЮЧЕНИЕ К ХОСТУ" 
@@ -41,32 +41,32 @@
                            Margin="0,0,0,20"/>
 
                 <TextBlock Text="Ваше имя:" Margin="0,0,0,5"/>
-                <TextBox x:Name="PlayerNameTextBox" 
-                         Text="Игрок 2" 
+                <TextBox Text="{Binding PlayerName, Mode=TwoWay}" 
                          Height="30"
-                         FontSize="14"/>
+                         FontSize="14"
+                         IsEnabled="{Binding IsControlsEnabled}"/>
 
                 <TextBlock Text="IP адрес хоста:" Margin="0,15,0,5"/>
-                <TextBox x:Name="HostIpTextBox" 
-                         Text="127.0.0.1" 
+                <TextBox Text="{Binding HostIp, Mode=TwoWay}" 
                          Height="30"
-                         FontSize="14"/>
+                         FontSize="14"
+                         IsEnabled="{Binding IsControlsEnabled}"/>
 
                 <TextBlock Text="Порт:" Margin="0,15,0,5"/>
-                <TextBox x:Name="PortTextBox" 
-                         Text="8888" 
+                <TextBox Text="{Binding Port, Mode=TwoWay}" 
                          Height="30"
-                         FontSize="14"/>
+                         FontSize="14"
+                         IsEnabled="{Binding IsControlsEnabled}"/>
 
-                <Button x:Name="ConnectButton"
-                        Content="🔗 ПОДКЛЮЧИТЬСЯ К ИГРЕ"
+                <Button Content="🔗 ПОДКЛЮЧИТЬСЯ К ИГРЕ"
                         Height="60"
                         FontSize="16"
                         FontWeight="Bold"
                         Background="#2196F3"
                         Foreground="White"
                         Margin="0,30,0,0"
-                        Click="ConnectButton_Click"
+                        Command="{Binding ConnectCommand}"
+                        IsEnabled="{Binding IsControlsEnabled}"
                         Cursor="Hand"/>
 
                 <Border x:Name="StatusBorder"
@@ -78,12 +78,10 @@
                         Margin="0,20,0,0"
                         Visibility="Collapsed">
                     <StackPanel>
-                        <TextBlock x:Name="StatusText" 
-                                   Text="Подключение..."
+                        <TextBlock Text="{Binding StatusText}" 
                                    FontWeight="Bold"
                                    Foreground="#2E7D32"/>
-                        <TextBlock x:Name="ConnectionInfoText" 
-                                   Text=""
+                        <TextBlock Text="{Binding ConnectionInfo}" 
                                    Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>

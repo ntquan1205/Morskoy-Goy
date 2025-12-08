@@ -13,7 +13,6 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Шапка -->
         <Border Grid.Row="0" Background="#4CAF50" Padding="15">
             <StackPanel Orientation="Horizontal">
                 <Button Content="← Назад" 
@@ -22,7 +21,7 @@
                         Foreground="White"
                         BorderThickness="0"
                         FontWeight="Bold"
-                        Click="BackButton_Click"
+                        Command="{Binding BackCommand}"
                         Cursor="Hand"/>
 
                 <TextBlock Text="ВЫ - ХОСТ ИГРЫ" 
@@ -34,7 +33,6 @@
             </StackPanel>
         </Border>
 
-        <!-- Основное содержимое -->
         <Grid Grid.Row="1" Margin="20">
             <StackPanel>
                 <TextBlock Text="Настройки хоста" 
@@ -42,33 +40,29 @@
                            FontWeight="Bold"
                            Margin="0,0,0,20"/>
 
-                <!-- Имя игрока -->
                 <TextBlock Text="Ваше имя:" Margin="0,0,0,5"/>
-                <TextBox x:Name="PlayerNameTextBox" 
-                         Text="Игрок 1" 
+                <TextBox Text="{Binding PlayerName, Mode=TwoWay}" 
                          Height="30"
-                         FontSize="14"/>
+                         FontSize="14"
+                         IsEnabled="{Binding IsControlsEnabled}"/>
 
-                <!-- Порт -->
                 <TextBlock Text="Порт для подключения:" Margin="0,15,0,5"/>
-                <TextBox x:Name="PortTextBox" 
-                         Text="8888" 
+                <TextBox Text="{Binding Port, Mode=TwoWay}" 
                          Height="30"
-                         FontSize="14"/>
+                         FontSize="14"
+                         IsEnabled="{Binding IsControlsEnabled}"/>
 
-                <!-- Кнопка запуска -->
-                <Button x:Name="StartHostButton"
-                        Content="🚀 ЗАПУСТИТЬ СЕРВЕР И ЖДАТЬ СОПЕРНИКА"
+                <Button Content="🚀 ЗАПУСТИТЬ СЕРВЕР И ЖДАТЬ СОПЕРНИКА"
                         Height="60"
                         FontSize="16"
                         FontWeight="Bold"
                         Background="#4CAF50"
                         Foreground="White"
                         Margin="0,30,0,0"
-                        Click="StartHostButton_Click"
+                        Command="{Binding StartHostCommand}"
+                        IsEnabled="{Binding IsControlsEnabled}"
                         Cursor="Hand"/>
 
-                <!-- Статус -->
                 <Border x:Name="StatusBorder"
                         Background="#FFF3E0"
                         BorderBrush="#FFB300"
@@ -78,17 +72,14 @@
                         Margin="0,20,0,0"
                         Visibility="Collapsed">
                     <StackPanel>
-                        <TextBlock x:Name="StatusText" 
-                                   Text="Ожидание подключения..."
+                        <TextBlock Text="{Binding StatusText}" 
                                    FontWeight="Bold"
                                    Foreground="#E65100"/>
-                        <TextBlock x:Name="ConnectionInfoText" 
-                                   Text=""
+                        <TextBlock Text="{Binding ConnectionInfo}" 
                                    Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 
-                <!-- Информация -->
                 <Border Background="#E3F2FD"
                         BorderBrush="#2196F3"
                         BorderThickness="1"
@@ -109,7 +100,6 @@
             </StackPanel>
         </Grid>
 
-        <!-- Подвал с IP -->
         <Border Grid.Row="2" 
                 Background="#F5F5F5" 
                 BorderBrush="#E0E0E0"
@@ -119,8 +109,7 @@
                 <TextBlock Text="Ваш IP адрес для подключения:" 
                            FontWeight="Bold"
                            Margin="0,0,0,5"/>
-                <TextBlock x:Name="IpAddressText" 
-                           Text="Загрузка..."
+                <TextBlock Text="{Binding IpAddress}" 
                            FontSize="14"
                            Foreground="#1976D2"/>
             </StackPanel>

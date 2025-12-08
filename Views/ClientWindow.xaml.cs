@@ -1,110 +1,59 @@
-﻿using Morskoy_Goy.Network;
-using Morskoy_Goy.Network.Client;
-using Morskoy_Goy.Network.Host;
-using System;
-using System.Windows;
-using System.Windows.Threading;
+﻿using System.Windows;
+using Morskoy_Goy.ViewModels;
 
 namespace Morskoy_Goy.Views
 {
     public partial class ClientWindow : Window
     {
-        private GameClient _gameClient;
+        private ClientViewModel _viewModel;
 
         public ClientWindow()
         {
             InitializeComponent();
+
+            _viewModel = new ClientViewModel();
+            DataContext = _viewModel;
+
+            _viewModel.PropertyChanged += ViewModel_PropertyChanged;
+
+            _viewModel.OnBackRequested += GoBack;
+            _viewModel.OnGameStarted += StartGame;
         }
 
-        private void BackButton_Click(object sender, RoutedEventArgs e)
+        private void ViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ClientViewModel.IsStatusVisible))
+            {
+                StatusBorder.Visibility = _viewModel.IsStatusVisible
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+            }
+        }
+
+        private void StartGame()
+        {
+            var placementWindow = new ShipPlacementWindow(
+                _viewModel.PlayerName,
+                "Хост",
+                false,
+                _viewModel 
+            );
+            placementWindow.Show();
+            this.Hide();
+        }
+
+        private void GoBack()
         {
             var mainMenu = new MainMenuView();
             mainMenu.Show();
             this.Close();
         }
 
-        private async void ConnectButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                string playerName = PlayerNameTextBox.Text;
-                string hostIp = HostIpTextBox.Text;
-                int port = int.Parse(PortTextBox.Text);
-
-                ConnectButton.IsEnabled = false;
-                PlayerNameTextBox.IsEnabled = false;
-                HostIpTextBox.IsEnabled = false;
-                PortTextBox.IsEnabled = false;
-
-                StatusBorder.Visibility = Visibility.Visible;
-                StatusText.Text = "Подключение к хосту...";
-                ConnectionInfoText.Text = $"{hostIp}:{port}";
-
-                _gameClient = new GameClient();
-                _gameClient.Connected += OnConnected;
-                _gameClient.Disconnected += OnDisconnected;
-
-                await _gameClient.Connect(hostIp, port, playerName);
-
-                StatusText.Text = "Подключение установлено!";
-                ConnectionInfoText.Text = "Ожидаем начала игры...";
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка подключения: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-
-                ConnectButton.IsEnabled = true;
-                PlayerNameTextBox.IsEnabled = true;
-                HostIpTextBox.IsEnabled = true;
-                PortTextBox.IsEnabled = true;
-                StatusBorder.Visibility = Visibility.Collapsed;
-            }
-        }
-
-        private void OnConnected(string hostName)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                StatusText.Text = $"Подключено к хосту: {hostName}";
-                ConnectionInfoText.Text = "Игра начинается...";
-
-                var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
-                timer.Tick += (s, e) =>
-                {
-                    timer.Stop();
-                    StartGame();
-                };
-                timer.Start();
-            });
-        }
-
-        private void OnDisconnected()
-        {
-            Dispatcher.Invoke(() =>
-            {
-                MessageBox.Show("Соединение с хостом разорвано", "Отключено");
-                BackButton_Click(null, null);
-            });
-        }
-
-        private void StartGame()
-        {
-
-            var placementWindow = new ShipPlacementWindow(
-            PlayerNameTextBox.Text,  
-            "Хост",         
-            false,                   
-            _gameClient
-            );
-            placementWindow.Show();
-            this.Hide(); 
-        }
-
-        protected override void OnClosed(EventArgs e)
+        protected override void OnClosed(System.EventArgs e)
         {
             base.OnClosed(e);
-            _gameClient?.Disconnect();
+            _viewModel.PropertyChanged -= ViewModel_PropertyChanged;
+            _viewModel?.Cleanup();
         }
     }
 }
