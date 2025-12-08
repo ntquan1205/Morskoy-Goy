@@ -49,72 +49,44 @@
                                FontWeight="Bold"
                                Margin="0,0,0,10"/>
 
-                    <ListBox x:Name="ShipsListBox" 
+                    <ListBox x:Name="ShipsListBox"
+                             ItemsSource="{Binding ShipsToPlace}"
+                             DisplayMemberPath="DisplayName"
                              Height="150"
                              Margin="0,0,0,20"
                              SelectionChanged="ShipsListBox_SelectionChanged">
-
-                        <ListBoxItem>
-                            <StackPanel Orientation="Horizontal">
-                                <Rectangle Width="20" Height="20" Fill="Gray" Margin="0,0,10,0"/>
-                                <TextBlock Text="4-палубный (1 шт)" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </ListBoxItem>
-                        <ListBoxItem>
-                            <StackPanel Orientation="Horizontal">
-                                <Rectangle Width="20" Height="20" Fill="Gray" Margin="0,0,10,0"/>
-                                <TextBlock Text="3-палубный (2 шт)" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </ListBoxItem>
-                        <ListBoxItem>
-                            <StackPanel Orientation="Horizontal">
-                                <Rectangle Width="20" Height="20" Fill="Gray" Margin="0,0,10,0"/>
-                                <TextBlock Text="2-палубный (3 шт)" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </ListBoxItem>
-                        <ListBoxItem>
-                            <StackPanel Orientation="Horizontal">
-                                <Rectangle Width="20" Height="20" Fill="Gray" Margin="0,0,10,0"/>
-                                <TextBlock Text="1-палубный (4 шт)" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </ListBoxItem>
                     </ListBox>
 
                     <TextBlock Text="Ориентация:" 
                                FontSize="14"
                                Margin="0,0,0,5"/>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
-                        <RadioButton x:Name="HorizontalRadio" 
-                                     Content="Горизонтально" 
+                        <RadioButton Content="Горизонтально" 
                                      IsChecked="True"
                                      Margin="0,0,10,0"/>
-                        <RadioButton x:Name="VerticalRadio" 
-                                     Content="Вертикально"/>
+                        <RadioButton Content="Вертикально"/>
                     </StackPanel>
 
-                    <Button x:Name="RandomPlaceButton"
-                            Content="Расставить случайно"
+                    <Button Content="Расставить случайно"
                             Height="35"
                             Margin="0,0,0,10"
-                            Click="RandomPlaceButton_Click"/>
+                            Command="{Binding RandomPlaceCommand}"/>
 
-                    <Button x:Name="ClearButton"
-                            Content="Очистить поле"
+                    <Button Content="Очистить поле"
                             Height="35"
                             Margin="0,0,0,10"
-                            Click="ClearButton_Click"/>
+                            Command="{Binding ClearCommand}"/>
 
-                    <Button x:Name="ReadyButton"
-                            Content="Готов к бою!"
+                    <Button Content="Готов к бою!"
                             Height="45"
                             FontSize="16"
                             FontWeight="Bold"
                             Background="#4CAF50"
                             Foreground="White"
-                            Click="ReadyButton_Click"/>
+                            IsEnabled="{Binding IsReadyButtonEnabled}"
+                            Command="{Binding ReadyCommand}"/>
 
-                    <TextBlock x:Name="StatusText" 
-                               Text="Разместите все корабли"
+                    <TextBlock Text="{Binding StatusText}" 
                                Margin="0,20,0,0"
                                Foreground="Gray"/>
                 </StackPanel>
