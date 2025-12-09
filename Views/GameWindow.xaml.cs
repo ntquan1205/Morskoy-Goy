@@ -55,6 +55,9 @@ namespace Morskoy_Goy.Views
             // Поле противника
             EnemyField.SetGameFieldLogic(_viewModel.EnemyField);
             EnemyField.SetHideShips(true);
+
+            MyField.UpdateView();
+            EnemyField.UpdateView();
         }
 
         private void UpdatePlayerField()

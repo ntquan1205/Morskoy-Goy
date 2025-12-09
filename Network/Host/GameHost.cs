@@ -23,10 +23,10 @@ namespace Morskoy_Goy.Network.Host
         private Player _clientPlayer;
 
         public event Action<int, int> IncomingShotReceived;
-
         public event Action<string> ClientConnected;
         public event Action ClientDisconnected;
         public event Action<ShotResultData> ShotResultReceived;
+        public event Action<bool> TurnChanged; // Добавляем событие для смены хода
 
         public void Start(int port, string playerName)
         {
@@ -43,11 +43,29 @@ namespace Morskoy_Goy.Network.Host
 
             ClientConnected?.Invoke("Соперник");
 
+            // Отправляем начальное состояние игры клиенту
+            SendGameStart();
+
             _listenThread = new Thread(ListenForMessages);
             _listenThread.Start();
         }
 
-        
+        private void SendGameStart()
+        {
+            var startData = new
+            {
+                HostName = _playerName,
+                HostStarts = true, // Хост начинает первым
+                Turn = _hostPlayer.IsMyTurn
+            };
+
+            SendMessage(new NetworkMessage
+            {
+                Type = MessageType.StartGame,
+                Data = startData
+            });
+        }
+
         private void ListenForMessages()
         {
             byte[] buffer = new byte[4096];
@@ -84,7 +102,6 @@ namespace Morskoy_Goy.Network.Host
         {
             var shotData = JsonSerializer.Deserialize<ShotData>(message.Data.ToString());
             IncomingShotReceived?.Invoke(shotData.X, shotData.Y);
-            
 
             var result = _hostPlayer.ReceiveShot(shotData.X, shotData.Y);
 
@@ -109,23 +126,50 @@ namespace Morskoy_Goy.Network.Host
                 Data = resultData
             });
 
+            // Обновляем статус хода
             if (!result.IsHit)
             {
                 _hostPlayer.IsMyTurn = true;
                 _clientPlayer.IsMyTurn = false;
+                TurnChanged?.Invoke(true); // Теперь ход хоста
             }
         }
 
+        // В методе ProcessShotResult добавьте отправку события для обновления UI хоста
         private void ProcessShotResult(NetworkMessage message)
         {
             var resultData = JsonSerializer.Deserialize<ShotResultData>(message.Data.ToString());
 
+            // ОБНОВЛЯЕМ ПОЛЕ ХОСТА (поле противника - EnemyField)
+            var cell = _hostPlayer.Field.GetCell(resultData.X, resultData.Y);
+            if (cell != null)
+            {
+                if (resultData.IsHit)
+                {
+                    cell.Status = resultData.IsShipDestroyed ?
+                        CellStatus.ShipDestroyed : CellStatus.ShipHited;
+                }
+                else
+                {
+                    cell.Status = CellStatus.Miss;
+                }
+            }
+
+            // Отправляем результат обратно в ViewModel для обновления UI
             ShotResultReceived?.Invoke(resultData);
 
+            // Логика смены хода
             if (!resultData.ShouldRepeatTurn && !resultData.IsGameOver)
+            {
+                _hostPlayer.IsMyTurn = true;
+                _clientPlayer.IsMyTurn = false;
+                TurnChanged?.Invoke(true);
+            }
+            else if (resultData.IsHit && !resultData.IsGameOver)
             {
                 _hostPlayer.IsMyTurn = false;
                 _clientPlayer.IsMyTurn = true;
+                TurnChanged?.Invoke(false);
             }
         }
 
@@ -143,6 +187,7 @@ namespace Morskoy_Goy.Network.Host
 
             _hostPlayer.IsMyTurn = false;
             _clientPlayer.IsMyTurn = true;
+            TurnChanged?.Invoke(false);
         }
 
         public void SendMessage(NetworkMessage message)

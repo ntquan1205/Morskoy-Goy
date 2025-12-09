@@ -42,10 +42,11 @@ namespace Morskoy_Goy.Models
                 if (cell.Ship?.IsDestroyed == true)
                 {
                     result.IsShipDestroyed = true;
+                    // ВАЖНО: вызываем метод для пометки клеток вокруг
                     MarkCellsAroundDestroyedShip(cell.Ship);
                 }
             }
-            else
+            else if (cell.Status == CellStatus.Empty)
             {
                 cell.Status = CellStatus.Miss;
                 result.IsHit = false;

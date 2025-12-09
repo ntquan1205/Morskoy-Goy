@@ -21,6 +21,7 @@ namespace Morskoy_Goy.Network.Client
         public event Action<string> Connected;
         public event Action Disconnected;
         public event Action<ShotResultData> ShotResultReceived;
+        public event Action<bool> TurnChanged; // Добавляем событие для смены хода
 
         public async System.Threading.Tasks.Task Connect(string hostIp, int port, string playerName)
         {
@@ -60,6 +61,10 @@ namespace Morskoy_Goy.Network.Client
                     {
                         ProcessShotResult(message);
                     }
+                    else if (message.Type == MessageType.StartGame)
+                    {
+                        ProcessGameStart(message);
+                    }
                 }
                 catch
                 {
@@ -68,6 +73,27 @@ namespace Morskoy_Goy.Network.Client
             }
 
             Disconnected?.Invoke();
+        }
+
+        private void ProcessGameStart(NetworkMessage message)
+        {
+            var startData = JsonSerializer.Deserialize<dynamic>(message.Data.ToString());
+
+            // Устанавливаем очередь хода в зависимости от хоста
+            bool hostStarts = startData.GetProperty("HostStarts").GetBoolean();
+
+            if (hostStarts)
+            {
+                _clientPlayer.IsMyTurn = false; // Клиент ждет хода
+                _hostPlayer.IsMyTurn = true;
+            }
+            else
+            {
+                _clientPlayer.IsMyTurn = true; // Клиент начинает
+                _hostPlayer.IsMyTurn = false;
+            }
+
+            TurnChanged?.Invoke(_clientPlayer.IsMyTurn);
         }
 
         private void ProcessIncomingShot(NetworkMessage message)
@@ -101,6 +127,7 @@ namespace Morskoy_Goy.Network.Client
             {
                 _clientPlayer.IsMyTurn = true;
                 _hostPlayer.IsMyTurn = false;
+                TurnChanged?.Invoke(true); // Теперь ход клиента
             }
         }
 
@@ -108,12 +135,34 @@ namespace Morskoy_Goy.Network.Client
         {
             var resultData = JsonSerializer.Deserialize<ShotResultData>(message.Data.ToString());
 
+            // ОБНОВЛЯЕМ ПОЛЕ КЛИЕНТА (поле противника - EnemyField)
+            var cell = _clientPlayer.Field.GetCell(resultData.X, resultData.Y);
+            if (cell != null)
+            {
+                if (resultData.IsHit)
+                {
+                    cell.Status = resultData.IsShipDestroyed ?
+                        CellStatus.ShipDestroyed : CellStatus.ShipHited;
+                }
+                else
+                {
+                    cell.Status = CellStatus.Miss;
+                }
+            }
+
             ShotResultReceived?.Invoke(resultData);
 
             if (!resultData.ShouldRepeatTurn && !resultData.IsGameOver)
             {
-                _clientPlayer.IsMyTurn = false;
+                _clientPlayer.IsMyTurn = true; // Клиент получает ход после промаха хоста
+                _hostPlayer.IsMyTurn = false;
+                TurnChanged?.Invoke(true);
+            }
+            else if (resultData.IsHit && !resultData.IsGameOver)
+            {
+                _clientPlayer.IsMyTurn = false; // Хост продолжает ход при попадании
                 _hostPlayer.IsMyTurn = true;
+                TurnChanged?.Invoke(false);
             }
         }
 
@@ -131,6 +180,7 @@ namespace Morskoy_Goy.Network.Client
 
             _clientPlayer.IsMyTurn = false;
             _hostPlayer.IsMyTurn = true;
+            TurnChanged?.Invoke(false);
         }
 
         public void SendMessage(NetworkMessage message)
