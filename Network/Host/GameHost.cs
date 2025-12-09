@@ -26,7 +26,7 @@ namespace Morskoy_Goy.Network.Host
         public event Action<string> ClientConnected;
         public event Action ClientDisconnected;
         public event Action<ShotResultData> ShotResultReceived;
-        public event Action<bool> TurnChanged; // Добавляем событие для смены хода
+        public event Action<bool> TurnChanged; 
 
         public void Start(int port, string playerName)
         {
@@ -55,7 +55,7 @@ namespace Morskoy_Goy.Network.Host
             var startData = new
             {
                 HostName = _playerName,
-                HostStarts = true, // Хост начинает первым
+                HostStarts = true, 
                 Turn = _hostPlayer.IsMyTurn
             };
 
@@ -126,21 +126,18 @@ namespace Morskoy_Goy.Network.Host
                 Data = resultData
             });
 
-            // Обновляем статус хода
             if (!result.IsHit)
             {
                 _hostPlayer.IsMyTurn = true;
                 _clientPlayer.IsMyTurn = false;
-                TurnChanged?.Invoke(true); // Теперь ход хоста
+                TurnChanged?.Invoke(true); 
             }
         }
 
-        // В методе ProcessShotResult добавьте отправку события для обновления UI хоста
         private void ProcessShotResult(NetworkMessage message)
         {
             var resultData = JsonSerializer.Deserialize<ShotResultData>(message.Data.ToString());
 
-            // ОБНОВЛЯЕМ ПОЛЕ ХОСТА (поле противника - EnemyField)
             var cell = _hostPlayer.Field.GetCell(resultData.X, resultData.Y);
             if (cell != null)
             {
@@ -155,10 +152,8 @@ namespace Morskoy_Goy.Network.Host
                 }
             }
 
-            // Отправляем результат обратно в ViewModel для обновления UI
             ShotResultReceived?.Invoke(resultData);
 
-            // Логика смены хода
             if (!resultData.ShouldRepeatTurn && !resultData.IsGameOver)
             {
                 _hostPlayer.IsMyTurn = true;

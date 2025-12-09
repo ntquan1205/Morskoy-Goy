@@ -51,7 +51,6 @@ namespace Morskoy_Goy.ViewModels
 
             InitializeGame(networkObject);
 
-            // Подписываемся на события смены хода
             if (_isHostMode && _host != null)
             {
                 _host.TurnChanged += OnTurnChanged;
@@ -208,7 +207,7 @@ namespace Morskoy_Goy.ViewModels
             _host.ClientDisconnected += OnClientDisconnected;
             _host.ShotResultReceived += OnShotResultReceived;
             _host.IncomingShotReceived += ProcessIncomingShot;
-            _host.TurnChanged += OnTurnChanged; // ВАЖНО: подписываемся на событие смены хода
+            _host.TurnChanged += OnTurnChanged; 
 
             MessageText = _host != null ? "Ожидание подключения соперника..." : "Готов к игре";
         }
@@ -237,7 +236,7 @@ namespace Morskoy_Goy.ViewModels
             _client.Connected += OnConnected;
             _client.Disconnected += OnDisconnected;
             _client.ShotResultReceived += OnShotResultReceived;
-            _client.TurnChanged += OnTurnChanged; // ВАЖНО: подписываемся на событие смены хода
+            _client.TurnChanged += OnTurnChanged; 
 
             MessageText = "Подключение установлено";
         }
@@ -254,7 +253,6 @@ namespace Morskoy_Goy.ViewModels
                 !int.TryParse(parts[1], out int y))
                 return;
 
-            // Проверяем, можно ли стрелять в эту клетку
             var cell = EnemyField.GetCell(x, y);
             if (cell == null ||
                 cell.Status == CellStatus.Miss ||
@@ -271,7 +269,6 @@ namespace Morskoy_Goy.ViewModels
             {
                 _host.SendShot(x, y);
                 shotSent = true;
-                // Ход теряем сразу после выстрела
                 IsMyTurn = false;
                 MessageText = $"Выстрел в ({x}, {y}) отправлен... Ожидаем результат";
             }
@@ -279,7 +276,6 @@ namespace Morskoy_Goy.ViewModels
             {
                 _client.SendShot(x, y);
                 shotSent = true;
-                // Ход теряем сразу после выстрела
                 IsMyTurn = false;
                 MessageText = $"Выстрел в ({x}, {y}) отправлен... Ожидаем результат";
             }
@@ -310,17 +306,14 @@ namespace Morskoy_Goy.ViewModels
                             $"Ваш корабль потоплен! Уничтожено палуб: {_myHitsCount}/{TOTAL_MY_DECKS}" :
                             $"Попадание по вашему кораблю! Уничтожено палуб: {_myHitsCount}/{TOTAL_MY_DECKS}";
 
-                        // При попадании противник продолжает ход
                         IsMyTurn = false;
                     }
                     else
                     {
                         MessageText = "Противник промахнулся! Теперь ваш ход.";
-                        // При промахе ход переходит к нам
                         IsMyTurn = true;
                     }
 
-                    // Проверяем поражение
                     if (_localPlayer.AllShipsDestroyed())
                     {
                         IsGameOver = true;
@@ -330,7 +323,6 @@ namespace Morskoy_Goy.ViewModels
                             MessageBoxButton.OK, MessageBoxImage.Information);
                     }
 
-                    // ОБНОВЛЯЕМ НАШЕ ПОЛЕ (показываем попадания противника)
                     OnPlayerFieldUpdated?.Invoke();
                 }
                 else
@@ -342,18 +334,14 @@ namespace Morskoy_Goy.ViewModels
             });
         }
 
-        // Исправим метод OnShotResultReceived для хоста
         private void OnShotResultReceived(ShotResultData result)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                // ЭТОТ МЕТОД ВЫЗЫВАЕТСЯ КОГДА МЫ ПОЛУЧАЕМ РЕЗУЛЬТАТ НАШЕГО ВЫСТРЕЛА
-                // (когда мы стреляем и получаем ответ от противника)
 
                 var cell = EnemyField.GetCell(result.X, result.Y);
                 if (cell == null) return;
 
-                // Проверяем, не стреляли ли уже в эту клетку
                 if (cell.Status == CellStatus.Miss ||
                     cell.Status == CellStatus.ShipHited ||
                     cell.Status == CellStatus.ShipDestroyed)
@@ -378,7 +366,6 @@ namespace Morskoy_Goy.ViewModels
                         MessageText = $"Попадание! Попаданий: {_enemyHitsCount}/{TOTAL_ENEMY_DECKS}";
                     }
 
-                    // Если попали, продолжаем ход
                     IsMyTurn = result.ShouldRepeatTurn;
 
                     if (result.ShouldRepeatTurn)
@@ -393,11 +380,9 @@ namespace Morskoy_Goy.ViewModels
                     IsMyTurn = false;
                 }
 
-                // Обновляем UI поля противника
                 OnEnemyFieldUpdated?.Invoke();
                 UpdateGameStatus();
 
-                // Проверяем победу
                 if (_enemyHitsCount >= TOTAL_ENEMY_DECKS)
                 {
                     IsGameOver = true;
@@ -409,7 +394,6 @@ namespace Morskoy_Goy.ViewModels
             });
         }
 
-        // Новый метод для пометки клеток вокруг уничтоженного корабля на поле противника
         private void MarkCellsAroundDestroyed(int x, int y)
         {
             for (int dx = -1; dx <= 1; dx++)
