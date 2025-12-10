@@ -18,6 +18,7 @@ namespace Morskoy_Goy.Network.Client
         private Player _clientPlayer;
         private Player _hostPlayer;
 
+        public event Action<int, int> IncomingShotReceived;
         public event Action<string> Connected;
         public event Action Disconnected;
         public event Action<ShotResultData> ShotResultReceived;
@@ -98,6 +99,7 @@ namespace Morskoy_Goy.Network.Client
         private void ProcessIncomingShot(NetworkMessage message)
         {
             var shotData = JsonSerializer.Deserialize<ShotData>(message.Data.ToString());
+            IncomingShotReceived?.Invoke(shotData.X, shotData.Y);
 
             var result = _clientPlayer.ReceiveShot(shotData.X, shotData.Y);
 
@@ -152,15 +154,15 @@ namespace Morskoy_Goy.Network.Client
 
             if (!resultData.ShouldRepeatTurn && !resultData.IsGameOver)
             {
-                _clientPlayer.IsMyTurn = true; 
-                _hostPlayer.IsMyTurn = false;
-                TurnChanged?.Invoke(true);
+                _clientPlayer.IsMyTurn = false;
+                _hostPlayer.IsMyTurn = true;
+                TurnChanged?.Invoke(false);
             }
             else if (resultData.IsHit && !resultData.IsGameOver)
             {
-                _clientPlayer.IsMyTurn = false; 
-                _hostPlayer.IsMyTurn = true;
-                TurnChanged?.Invoke(false);
+                _clientPlayer.IsMyTurn = true;
+                _hostPlayer.IsMyTurn = false;
+                TurnChanged?.Invoke(true);
             }
         }
 

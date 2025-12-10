@@ -156,15 +156,15 @@ namespace Morskoy_Goy.Network.Host
 
             if (!resultData.ShouldRepeatTurn && !resultData.IsGameOver)
             {
-                _hostPlayer.IsMyTurn = true;
-                _clientPlayer.IsMyTurn = false;
-                TurnChanged?.Invoke(true);
-            }
-            else if (resultData.IsHit && !resultData.IsGameOver)
-            {
                 _hostPlayer.IsMyTurn = false;
                 _clientPlayer.IsMyTurn = true;
                 TurnChanged?.Invoke(false);
+            }
+            else if (resultData.IsHit && !resultData.IsGameOver)
+            {
+                _hostPlayer.IsMyTurn = true;
+                _clientPlayer.IsMyTurn = false;
+                TurnChanged?.Invoke(true);
             }
         }
 

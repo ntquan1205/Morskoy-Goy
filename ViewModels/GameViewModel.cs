@@ -236,7 +236,9 @@ namespace Morskoy_Goy.ViewModels
             _client.Connected += OnConnected;
             _client.Disconnected += OnDisconnected;
             _client.ShotResultReceived += OnShotResultReceived;
-            _client.TurnChanged += OnTurnChanged; 
+            _client.TurnChanged += OnTurnChanged;
+
+            _client.IncomingShotReceived += ProcessIncomingShot;
 
             MessageText = "Подключение установлено";
         }
