@@ -22,11 +22,18 @@ namespace Morskoy_Goy.Network.Host
         private Player _hostPlayer;
         private Player _clientPlayer;
 
-        public event Action<int, int> IncomingShotReceived;
+        public event Action<ShotResultData> IncomingShotReceived;
         public event Action<string> ClientConnected;
         public event Action ClientDisconnected;
         public event Action<ShotResultData> ShotResultReceived;
-        public event Action<bool> TurnChanged; 
+        public event Action<bool> TurnChanged;
+
+        public void SetLocalPlayer(Player player)
+        {
+            _hostPlayer = player;
+
+            _clientPlayer ??= new Player(false);
+        }
 
         public void Start(int port, string playerName)
         {
@@ -38,12 +45,11 @@ namespace Morskoy_Goy.Network.Host
             _client = _listener.AcceptTcpClient();
             _stream = _client.GetStream();
 
-            _hostPlayer = new Player(true);
-            _clientPlayer = new Player(false);
+            _hostPlayer ??= new Player(true);
+            _clientPlayer ??= new Player(false);
 
             ClientConnected?.Invoke("Соперник");
 
-            // Отправляем начальное состояние игры клиенту
             SendGameStart();
 
             _listenThread = new Thread(ListenForMessages);
@@ -101,7 +107,6 @@ namespace Morskoy_Goy.Network.Host
         private void ProcessIncomingShot(NetworkMessage message)
         {
             var shotData = JsonSerializer.Deserialize<ShotData>(message.Data.ToString());
-            IncomingShotReceived?.Invoke(shotData.X, shotData.Y);
 
             var result = _hostPlayer.ReceiveShot(shotData.X, shotData.Y);
 
@@ -119,6 +124,8 @@ namespace Morskoy_Goy.Network.Host
                 resultData.IsGameOver = true;
                 resultData.ShouldRepeatTurn = false;
             }
+
+            IncomingShotReceived?.Invoke(resultData);
 
             SendMessage(new NetworkMessage
             {

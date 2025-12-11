@@ -70,7 +70,6 @@ namespace Morskoy_Goy.ViewModels
             });
         }
 
-        // В методе Cleanup добавьте отписку
         public void Cleanup()
         {
             if (_isHostMode && _host != null)
@@ -144,14 +143,14 @@ namespace Morskoy_Goy.ViewModels
 
                 EnemyField = new Models.GameField();
 
-                if (_isHostMode)
-                {
-                    InitializeAsHost(networkObject);
-                }
-                else
-                {
-                    InitializeAsClient(networkObject);
-                }
+            if (_isHostMode)
+            {
+                InitializeAsHost(networkObject);
+            }
+            else
+            {
+                InitializeAsClient(networkObject);
+            }
 
                 IsMyTurn = _localPlayer.IsMyTurn;
                 UpdateGameStatus();
@@ -203,6 +202,8 @@ namespace Morskoy_Goy.ViewModels
                 _host.Start(12345, _playerName);
             }
 
+            _host.SetLocalPlayer(_localPlayer);
+
             _host.ClientConnected += OnClientConnected;
             _host.ClientDisconnected += OnClientDisconnected;
             _host.ShotResultReceived += OnShotResultReceived;
@@ -232,6 +233,8 @@ namespace Morskoy_Goy.ViewModels
                     return;
                 }
             }
+
+            _client.SetLocalPlayer(_localPlayer);
 
             _client.Connected += OnConnected;
             _client.Disconnected += OnDisconnected;
@@ -290,47 +293,38 @@ namespace Morskoy_Goy.ViewModels
             UpdateGameStatus();
         }
 
-        public void ProcessIncomingShot(int x, int y)
+        public void ProcessIncomingShot(ShotResultData shotResult)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                var cell = _localPlayer.Field.GetCell(x, y);
+                var cell = _localPlayer.Field.GetCell(shotResult.X, shotResult.Y);
                 if (cell == null) return;
 
-                var shotResult = _localPlayer.ReceiveShot(x, y);
-
-                if (shotResult.IsValid)
+                if (shotResult.IsHit)
                 {
-                    if (shotResult.IsHit)
-                    {
-                        _myHitsCount++;
-                        MessageText = shotResult.IsShipDestroyed ?
-                            $"Ваш корабль потоплен! Уничтожено палуб: {_myHitsCount}/{TOTAL_MY_DECKS}" :
-                            $"Попадание по вашему кораблю! Уничтожено палуб: {_myHitsCount}/{TOTAL_MY_DECKS}";
+                    _myHitsCount++;
+                    MessageText = shotResult.IsShipDestroyed ?
+                        $"Ваш корабль потоплен! Уничтожено палуб: {_myHitsCount}/{TOTAL_MY_DECKS}" :
+                        $"Попадание по вашему кораблю! Уничтожено палуб: {_myHitsCount}/{TOTAL_MY_DECKS}";
 
-                        IsMyTurn = false;
-                    }
-                    else
-                    {
-                        MessageText = "Противник промахнулся! Теперь ваш ход.";
-                        IsMyTurn = true;
-                    }
-
-                    if (_localPlayer.AllShipsDestroyed())
-                    {
-                        IsGameOver = true;
-                        IsMyTurn = false;
-                        MessageText = "Вы проиграли! Все ваши корабли уничтожены!";
-                        MessageBox.Show("Вы проиграли! Все ваши корабли уничтожены!", "Игра окончена",
-                            MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
-
-                    OnPlayerFieldUpdated?.Invoke();
+                    IsMyTurn = false;
                 }
                 else
                 {
-                    MessageText = "Недопустимый выстрел!";
+                    MessageText = "Противник промахнулся! Теперь ваш ход.";
+                    IsMyTurn = true;
                 }
+
+                if (_localPlayer.AllShipsDestroyed())
+                {
+                    IsGameOver = true;
+                    IsMyTurn = false;
+                    MessageText = "Вы проиграли! Все ваши корабли уничтожены!";
+                    MessageBox.Show("Вы проиграли! Все ваши корабли уничтожены!", "Игра окончена",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+
+                OnPlayerFieldUpdated?.Invoke();
 
                 UpdateGameStatus();
             });

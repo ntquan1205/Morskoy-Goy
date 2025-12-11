@@ -18,11 +18,18 @@ namespace Morskoy_Goy.Network.Client
         private Player _clientPlayer;
         private Player _hostPlayer;
 
-        public event Action<int, int> IncomingShotReceived;
+        public event Action<ShotResultData> IncomingShotReceived;
         public event Action<string> Connected;
         public event Action Disconnected;
         public event Action<ShotResultData> ShotResultReceived;
         public event Action<bool> TurnChanged; 
+
+        public void SetLocalPlayer(Player player)
+        {
+            _clientPlayer = player;
+
+            _hostPlayer ??= new Player(true);
+        }
 
         public async System.Threading.Tasks.Task Connect(string hostIp, int port, string playerName)
         {
@@ -31,8 +38,8 @@ namespace Morskoy_Goy.Network.Client
             _stream = _client.GetStream();
             _isConnected = true;
 
-            _clientPlayer = new Player(false);
-            _hostPlayer = new Player(true);
+            _clientPlayer ??= new Player(false);
+            _hostPlayer ??= new Player(true);
 
             Connected?.Invoke("Хост");
 
@@ -99,7 +106,6 @@ namespace Morskoy_Goy.Network.Client
         private void ProcessIncomingShot(NetworkMessage message)
         {
             var shotData = JsonSerializer.Deserialize<ShotData>(message.Data.ToString());
-            IncomingShotReceived?.Invoke(shotData.X, shotData.Y);
 
             var result = _clientPlayer.ReceiveShot(shotData.X, shotData.Y);
 
@@ -117,6 +123,8 @@ namespace Morskoy_Goy.Network.Client
                 resultData.IsGameOver = true;
                 resultData.ShouldRepeatTurn = false;
             }
+
+            IncomingShotReceived?.Invoke(resultData);
 
             SendMessage(new NetworkMessage
             {
