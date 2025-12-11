@@ -144,7 +144,7 @@ namespace Morskoy_Goy.Network.Client
         {
             var resultData = JsonSerializer.Deserialize<ShotResultData>(message.Data.ToString());
 
-            var cell = _clientPlayer.Field.GetCell(resultData.X, resultData.Y);
+            var cell = _hostPlayer.Field.GetCell(resultData.X, resultData.Y);
             if (cell != null)
             {
                 if (resultData.IsHit)
