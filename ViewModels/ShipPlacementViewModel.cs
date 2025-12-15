@@ -18,7 +18,7 @@ namespace Morskoy_Goy.ViewModels
         private string _opponentName;
         private bool _isHost;
         private object _networkObject;
-        private bool _isHorizontal = true; // По умолчанию горизонтально
+        private bool _isHorizontal = true; 
 
         public ObservableCollection<ShipListItem> ShipsToPlace { get; } = new ObservableCollection<ShipListItem>();
 

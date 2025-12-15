@@ -24,7 +24,7 @@ namespace Morskoy_Goy.Views
                 _viewModel.PlayerName,
                 "Соперник",
                 true,
-                _viewModel.GameHost // ← Используем свойство
+                _viewModel.GameHost 
             );
             placementWindow.Show();
             this.Hide();

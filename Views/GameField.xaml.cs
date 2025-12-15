@@ -186,6 +186,14 @@ namespace Morskoy_Goy.Views
 
         private void MarkCellsAroundDestroyedShip(Ship ship)
         {
+            if (_gameFieldLogic == null) return;
+
+            foreach (var shipCell in ship.OccupiedCells)
+            {
+                shipCell.Status = CellStatus.ShipDestroyed;
+                UpdateCellView(shipCell.X, shipCell.Y);
+            }
+
             foreach (var cell in ship.OccupiedCells)
             {
                 for (int dx = -1; dx <= 1; dx++)

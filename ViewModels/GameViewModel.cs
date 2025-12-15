@@ -6,6 +6,7 @@ using Morskoy_Goy.Services;
 using Morskoy_Goy.ViewModels.Base;
 using Morskoy_Goy.ViewModels.Common;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -166,6 +167,23 @@ namespace Morskoy_Goy.ViewModels
         {
             if (source == null || destination == null) return;
 
+            // Reset destination cells before copy
+            for (int x = 0; x < Models.GameField.Width; x++)
+            {
+                for (int y = 0; y < Models.GameField.Height; y++)
+                {
+                    var destCell = destination.GetCell(x, y);
+                    if (destCell != null)
+                    {
+                        destCell.Status = CellStatus.Empty;
+                        destCell.Ship = null;
+                    }
+                }
+            }
+
+            var shipMap = new System.Collections.Generic.Dictionary<Ship, Ship>();
+            destination.Ships.Clear();
+
             for (int x = 0; x < Models.GameField.Width; x++)
             {
                 for (int y = 0; y < Models.GameField.Height; y++)
@@ -176,15 +194,25 @@ namespace Morskoy_Goy.ViewModels
                     if (sourceCell != null && destCell != null)
                     {
                         destCell.Status = sourceCell.Status;
-                        destCell.Ship = sourceCell.Ship;
+
+                        if (sourceCell.Ship != null)
+                        {
+                            if (!shipMap.TryGetValue(sourceCell.Ship, out var mappedShip))
+                            {
+                                mappedShip = new Ship(sourceCell.Ship.Type);
+                                shipMap[sourceCell.Ship] = mappedShip;
+                                destination.Ships.Add(mappedShip);
+                            }
+
+                            destCell.Ship = mappedShip;
+                            mappedShip.OccupiedCells.Add(destCell);
+                        }
+                        else
+                        {
+                            destCell.Ship = null;
+                        }
                     }
                 }
-            }
-
-            destination.Ships.Clear();
-            foreach (var ship in source.Ships)
-            {
-                destination.Ships.Add(ship);
             }
 
             destination.IsReady = source.IsReady;
@@ -389,20 +417,51 @@ namespace Morskoy_Goy.ViewModels
                 }
             });
         }
-
         private void MarkCellsAroundDestroyed(int x, int y)
         {
-            for (int dx = -1; dx <= 1; dx++)
-            {
-                for (int dy = -1; dy <= 1; dy++)
-                {
-                    int checkX = x + dx;
-                    int checkY = y + dy;
+            if (EnemyField == null) return;
 
-                    var cell = EnemyField.GetCell(checkX, checkY);
-                    if (cell != null && cell.Status == CellStatus.Empty)
+            var shipCells = new System.Collections.Generic.List<Cell>();
+            var visited = new System.Collections.Generic.HashSet<string>();
+
+            void Dfs(int cx, int cy)
+            {
+                if (!EnemyField.IsValidCoordinates(cx, cy)) return;
+
+                var key = $"{cx},{cy}";
+                if (visited.Contains(key)) return;
+
+                var current = EnemyField.GetCell(cx, cy);
+                if (current == null ||
+                    (current.Status != CellStatus.ShipHited && current.Status != CellStatus.ShipDestroyed))
+                    return;
+
+                visited.Add(key);
+                shipCells.Add(current);
+                current.Status = CellStatus.ShipDestroyed;
+
+                Dfs(cx + 1, cy);
+                Dfs(cx - 1, cy);
+                Dfs(cx, cy + 1);
+                Dfs(cx, cy - 1);
+            }
+
+            Dfs(x, y);
+
+            foreach (var shipCell in shipCells)
+            {
+                for (int dx = -1; dx <= 1; dx++)
+                {
+                    for (int dy = -1; dy <= 1; dy++)
                     {
-                        cell.Status = CellStatus.Miss;
+                        int nx = shipCell.X + dx;
+                        int ny = shipCell.Y + dy;
+
+                        var neighbor = EnemyField.GetCell(nx, ny);
+                        if (neighbor != null && neighbor.Status == CellStatus.Empty)
+                        {
+                            neighbor.Status = CellStatus.Miss;
+                        }
                     }
                 }
             }

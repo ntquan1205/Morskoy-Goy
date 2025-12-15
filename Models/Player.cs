@@ -42,7 +42,6 @@ namespace Morskoy_Goy.Models
                 if (cell.Ship?.IsDestroyed == true)
                 {
                     result.IsShipDestroyed = true;
-                    // ВАЖНО: вызываем метод для пометки клеток вокруг
                     MarkCellsAroundDestroyedShip(cell.Ship);
                 }
             }
@@ -57,6 +56,11 @@ namespace Morskoy_Goy.Models
 
         private void MarkCellsAroundDestroyedShip(Ship ship)
         {
+            foreach (var shipCell in ship.OccupiedCells)
+            {
+                shipCell.Status = CellStatus.ShipDestroyed;
+            }
+
             foreach (var cell in ship.OccupiedCells)
             {
                 for (int dx = -1; dx <= 1; dx++)

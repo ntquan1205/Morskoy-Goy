@@ -158,7 +158,6 @@ namespace Morskoy_Goy.ViewModels
                 StatusText = $"Соперник подключен: {clientName}";
                 ConnectionInfo = "Игра начинается...";
 
-                // Запускаем таймер для перехода к игре
                 _connectionTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
                 _connectionTimer.Tick += (s, e) =>
                 {

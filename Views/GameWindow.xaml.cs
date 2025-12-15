@@ -31,15 +31,12 @@ namespace Morskoy_Goy.Views
 
             DataContext = _viewModel;
 
-            // Подключаем события для обновления полей
             _viewModel.OnPlayerFieldUpdated += UpdatePlayerField;
             _viewModel.OnEnemyFieldUpdated += UpdateEnemyField;
             _viewModel.OnWindowClosed += CloseWindow;
 
-            // Инициализируем поля
             InitializeFields();
 
-            // Подключаем клики по полю противника
             EnemyField.CellClicked += (x, y) =>
                 _viewModel.EnemyCellClickCommand?.Execute($"{x},{y}");
         }
@@ -48,11 +45,9 @@ namespace Morskoy_Goy.Views
         {
             if (_viewModel == null) return;
 
-            // Наше поле
             MyField.SetGameFieldLogic(_viewModel.LocalPlayer.Field);
             MyField.SetHideShips(false);
 
-            // Поле противника
             EnemyField.SetGameFieldLogic(_viewModel.EnemyField);
             EnemyField.SetHideShips(true);
 
@@ -84,7 +79,6 @@ namespace Morskoy_Goy.Views
         {
             base.OnClosed(e);
 
-            // Отписываемся от событий
             if (_viewModel != null)
             {
                 _viewModel.OnPlayerFieldUpdated -= UpdatePlayerField;

@@ -1,6 +1,7 @@
 ﻿using Morskoy_Goy.Models;
 using Morskoy_Goy.Network.Common;
 using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
@@ -151,6 +152,11 @@ namespace Morskoy_Goy.Network.Client
                 {
                     cell.Status = resultData.IsShipDestroyed ?
                         CellStatus.ShipDestroyed : CellStatus.ShipHited;
+
+                    if (resultData.IsShipDestroyed)
+                    {
+                        MarkCellsAroundDestroyedShip(resultData.X, resultData.Y, _hostPlayer.Field);
+                    }
                 }
                 else
                 {
@@ -205,6 +211,55 @@ namespace Morskoy_Goy.Network.Client
             _isConnected = false;
             _stream?.Close();
             _client?.Close();
+        }
+        private void MarkCellsAroundDestroyedShip(int x, int y, GameField field)
+        {
+            if (field == null) return;
+
+            var shipCells = new List<Cell>();
+            var visited = new HashSet<string>();
+
+            void Dfs(int cx, int cy)
+            {
+                if (!field.IsValidCoordinates(cx, cy)) return;
+
+                var key = $"{cx},{cy}";
+                if (visited.Contains(key)) return;
+
+                var current = field.GetCell(cx, cy);
+                if (current == null ||
+                    (current.Status != CellStatus.ShipHited && current.Status != CellStatus.ShipDestroyed))
+                    return;
+
+                visited.Add(key);
+                shipCells.Add(current);
+                current.Status = CellStatus.ShipDestroyed;
+
+                Dfs(cx + 1, cy);
+                Dfs(cx - 1, cy);
+                Dfs(cx, cy + 1);
+                Dfs(cx, cy - 1);
+            }
+
+            Dfs(x, y);
+
+            foreach (var shipCell in shipCells)
+            {
+                for (int dx = -1; dx <= 1; dx++)
+                {
+                    for (int dy = -1; dy <= 1; dy++)
+                    {
+                        int nx = shipCell.X + dx;
+                        int ny = shipCell.Y + dy;
+
+                        var neighbor = field.GetCell(nx, ny);
+                        if (neighbor != null && neighbor.Status == CellStatus.Empty)
+                        {
+                            neighbor.Status = CellStatus.Miss;
+                        }
+                    }
+                }
+            }
         }
     }
 }
